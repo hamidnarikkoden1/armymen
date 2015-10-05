@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    <script src="Scripts/jquery-2.1.4.min.js"></script>
+    <link href="jquery.svg.css" rel="stylesheet" />
+    <script src="jquery.svg.js"></script>
+</head>
+<body>
+    <span id="playerturn" style="font:bold 35px arial, verdana;"></span>
+    
+    <div id="svgintro" style="height:850px;position:relative;" align="right" >
+        
+    </div>
+    <div>
+
+        <table style="font:bold 16px arial, verdana;">
+            <thead>
+                <tr>
+                    <th>Player 1</th>
+                    <th>Player 2</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td id="score1"></td>
+                    <td id="score2"></td>
+                </tr>
+            </tbody>
+
+        </table>
+    </div>
+    
+
+    <script type="text/javascript">
+        var player1 = "Player1";
+        var player2 = "Player2";
+        var player1Score = 0;
+        var player2Score = 0;
+        var Isplayer1Turn = true;
+        $('#playerturn').html("Now it's " + player1 + "'s turn")
+        $('#score1').html(player1Score);
+        $('#score2').html(player2Score);
+        $('#svgintro').svg({ onLoad: drawIntro });
+        function drawIntro(svg) {
+            var count = 8;
+            var x = 500;
+            var y = 100;
+            g = svg.group({ stroke: 'black' });
+            for (i = count; i >= 1; i--) {
+                var xr = x;
+                for (j = 0; j < i; j++) {
+                    svg.circle(g, xr, y, 15, {
+                        fill: 'red',
+                        stroke: 'blue',
+                        strokeWidth: 5
+
+                    });
+                    xr = xr + 150;
+                }
+                x = x + 75;
+                y = y + 100;
+            }
+
+            $('circle').click(function () {
+                $(this).attr("fill", "black");
+                $(this).addClass('checked');
+                $(this).attr('disbaled', 'disabled');
+                var x = $(this).attr('cx');
+                var y = $(this).attr('cy');
+                var x_start = 0;
+                var x_end = 0;
+                var x_list = new Array();
+
+                var isQualified = true;
+                $('circle[cy="' + y + '"]').each(function () {
+                    x_list.push($(this).attr('cx'));
+                    var isSelected = $(this).attr('fill') == 'black';
+                    if (!isSelected) {
+                        isQualified = false;
+                    }
+                })
+
+                if (isQualified && x_list.length > 1) {
+                    if (Isplayer1Turn) {
+                        player1Score = player1Score + x_list.length;
+                    }
+                    else {
+                        player2Score = player2Score + x_list.length;
+                    }
+                    x_start = x_list[0];
+                    x_end = x_list[x_list.length - 1];
+                    g = svg.group({ stroke: 'black' });
+                    svg.line(g, x_start, y, x_end, y, { strokeWidth: 8 });
+
+                }
+
+                var x_loop = x - (((y / 100) - 1) * 75);
+                var y_loop = 100;
+                x_list = new Array();
+                isQualified = true;
+                var y_list = new Array();
+                for (i = 0; i < count; i++) {
+                    var element = $('circle[cy="' + y_loop + '"][cx="' + x_loop + '"]');
+                    var elementCount = element.length;
+                    if (elementCount > 0) {
+                        x_list.push($(element).attr('cx'));
+                        y_list.push($(element).attr('cy'));
+                        var isSelected = $(element).attr('fill') == 'black';
+                        if (!isSelected) {
+                            isQualified = false;
+                        }
+                        x_loop = x_loop + 75;
+                        y_loop = y_loop + 100;
+                    }
+                    else {
+                        break;
+                    }
+                }
+                if (isQualified && x_list.length > 1) {
+                    if (Isplayer1Turn) {
+                        player1Score = player1Score + x_list.length;
+                    }
+                    else {
+                        player2Score = player2Score + x_list.length;
+                    }
+                    x_start = x_list[0];
+                    x_end = x_list[x_list.length - 1];
+                    var y_start = y_list[0];
+                    y_end = y_list[y_list.length - 1];
+                    g = svg.group({ stroke: 'black' });
+                    svg.line(g, x_start, y_start, x_end, y_end, { strokeWidth: 8 });
+                }
+
+                x_loop = +x + +(((y / 100) - 1) * 75);
+                y_loop = 100;
+                x_list = new Array();
+                isQualified = true;
+                y_list = new Array();
+                for (i = 0; i < count; i++) {
+                    var element = $('circle[cy="' + y_loop + '"][cx="' + x_loop + '"]');
+                    var elementCount = element.length;
+                    if (elementCount > 0) {
+                        x_list.push($(element).attr('cx'));
+                        y_list.push($(element).attr('cy'));
+                        var isSelected = $(element).attr('fill') == 'black';
+                        if (!isSelected) {
+                            isQualified = false;
+                        }
+                        x_loop = x_loop - 75;
+                        y_loop = y_loop + 100;
+                    }
+                    else {
+                        break;
+                    }
+                }
+
+                if (isQualified && x_list.length > 1) {
+                    if (Isplayer1Turn) {
+                        player1Score = player1Score + x_list.length;
+                    }
+                    else {
+                        player2Score = player2Score + x_list.length;
+                    }
+                    x_start = x_list[0];
+                    x_end = x_list[x_list.length - 1];
+                    var y_start = y_list[0];
+                    y_end = y_list[y_list.length - 1];
+                    g = svg.group({ stroke: 'black' });
+                    svg.line(g, x_start, y_start, x_end, y_end, { strokeWidth: 8 });
+                }
+
+                $('#score1').html(player1Score);
+                $('#score2').html(player2Score);
+                Isplayer1Turn = !Isplayer1Turn;
+                var playerTurn = Isplayer1Turn == true ? player1 : player2;
+                $('#playerturn').html("Now it's " + playerTurn + "'s turn")
+            });
+
+        }
+
+
+    </script>
+</body>
+</html>

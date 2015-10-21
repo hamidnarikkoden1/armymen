@@ -1,0 +1,91 @@
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <script src="~/Scripts/jquery-1.9.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/knockout-3.3.0.js"></script>
+    <script src="~/Scripts/knockout.mapping-latest.js"></script>
+    <link href="~/Knockout-file-upload.css" rel="stylesheet" />
+    <script src="~/Scripts/knockout-file-bindings.js"></script>
+
+</head>
+<body>
+
+    <div class="container" style="margin-top:100px;">
+        <div class="row ">
+            <div class="col-md-6 pull-right">
+                <a style="cursor:pointer;" data-bind="click: save">
+                    <i class="fa fa-plus-circle fa-2x" style="color:green;"></i>
+                </a>
+            </div>
+        </div>
+        <div class="row">
+
+            <form class="form-horizontal" role="form">
+
+                <div class="form-group">
+                    <label class="control-label col-md-2" for="email">Select File</label>
+                    <div class="col-md-4">
+                        <input type="file" class="form-control" data-bind="fileInput: fileData, customFileInput: {
+              buttonClass: 'btn btn-primary',
+              fileNameClass: 'disabled form-control',
+              onClear: onClear,
+            }">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-2" for="pwd">Name</label>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" id="pwd" placeholder="Enter File Name" data-bind="value:fileName">
+                    </div>
+                </div>
+            </form>
+
+
+
+
+        </div>
+
+    </div>
+    <script type="text/javascript">
+        $(function () {
+            var viewModel = {};
+            viewModel.fileData = ko.observable({
+                dataURL: ko.observable(),
+                // base64String: ko.observable(),
+            });
+            viewModel.fileName = ko.observable();
+            viewModel.file = ko.computed(function () {
+                return viewModel.fileData().dataURL();
+            });
+
+            viewModel.onClear = function (fileData) {
+                if (confirm('Are you sure?')) {
+                    fileData.clear && fileData.clear();
+                }
+            };
+            viewModel.save = function () {
+                debugger;
+                window.viewModel = viewModel;
+                console.log(ko.toJSON(viewModel));
+                debugger;
+                
+
+               // $.post("/Home/Save", ko.mapping.toJS(viewModel), function () { });
+                ko.utils.postJson("/Home/Save", { attachment: ko.mapping.toJS(viewModel) });
+            };
+            ko.applyBindings(viewModel);
+        });
+    </script>
+</body>
+</html>

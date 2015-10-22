@@ -1,0 +1,105 @@
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <script src="~/Scripts/jquery-1.9.1.min.js"></script>
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+    <script src="~/Scripts/knockout-3.3.0.js"></script>
+</head>
+<body>
+    <div>
+        @*@using (Ajax.BeginForm("Save", "Home", new AjaxOptions() { HttpMethod = "Post" }, new { enctype = "multipart/form-data" }))
+            {
+                <input type="file" name="file" />
+                <input type="text" name="fileName" />
+                <input type="submit" value="save" />
+
+            }*@
+
+        <div class='liveExample'>
+            <input data-bind="event: { change: uploadImage }" style="width: 10px;" type="file">
+            <a data-bind="click: triggerImageInputOne" class="image-content-editing-link">or upload from computer</a>
+
+        </div>
+    </div>
+    <script type="text/javascript">
+        var ViewModel = function () {
+            var self = this;
+            self.triggerImageInputOne = function () {
+                document.querySelector('input' + self.cardId()).click();
+            };
+            self.uploadImage = function () {
+                debugger;
+                //var file = $('input[type="file"]')[0].files[0];
+                //var fileReader = new FileReader();
+
+                //var baseString = fileReader.readAsDataURL($('input[type="file"]')[0].files[0]).result;
+
+                var fileReader = new FileReader();
+                fileReader.onload = function (event) {
+                    console.log(event.target.result);
+                    $.ajax({
+                        url: '@Url.Action("Save","Home")',
+                        data: { "baseurl": event.target.result },
+                        type: 'Post',
+                        datatype: 'json',
+
+                        success: function (result) { }
+
+                    })
+                };
+                var url = fileReader.readAsDataURL($('input[type="file"]')[0].files[0]);
+
+
+
+               
+
+                //console.log(file);
+                ///* Is the file an image? */
+                //if (!file || !file.type.match(/image.*/)) return;
+
+                ///* It is! */
+                //document.body.className = "uploading";
+
+                ///* Lets build a FormData object*/
+                //var fd = new FormData();
+                //fd.append("image", file); // Append the file
+                //fd.append("key", "262662626262");
+                //var xhr = new XMLHttpRequest(); //
+                //xhr.open("POST", "http://api.imgur.com/2/upload.json");
+                //xhr.onload = function () {
+
+                //    document.querySelector("#link").href = JSON.parse(xhr.responseText).upload.links.imgur_page;
+                //    document.body.className = "uploaded";
+                //}
+
+
+                ///* And now, we send the formdata */
+                //xhr.send(fd);
+            };
+
+
+        };
+
+        ko.applyBindings(new ViewModel());
+    </script>
+</body>
+</html>
+
+
+
+        [HttpPost]
+        public ActionResult Save(string baseurl)
+        {
+            string imageDataParsed = baseurl.Substring(baseurl.IndexOf(',') + 1);
+            byte[] imageBytes = Convert.FromBase64String(imageDataParsed);
+            var imageStream = new MemoryStream(imageBytes, false);
+            return RedirectToAction("Index");
+        }
